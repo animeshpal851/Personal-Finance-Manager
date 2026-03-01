@@ -1,1 +1,1 @@
-# Personal-Finance-App
+# Personal-Finance-Manager
