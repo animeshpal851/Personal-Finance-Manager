@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 💰 FinanceOS — Personal Finance Web App
 ### Flask + MongoDB + Chart.js
 
@@ -110,3 +111,6 @@ DEBUG=false
 - **Icons**: Font Awesome 6
 - **Fonts**: DM Sans + Space Mono (Google Fonts)
 - **No frontend framework** — pure HTML/CSS/JS
+=======
+# Personal-Finance-Manager
+>>>>>>> e756dc2ba710a11d16d7220c0ad9aa199289db0d
