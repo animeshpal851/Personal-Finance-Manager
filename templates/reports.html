@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+{% block title %}Reports — FinanceOS{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+
+{% block content %}
+
+<!-- Overall Totals -->
+<div class="stat-grid" style="margin-bottom:24px">
+  <div class="stat-card stat-income">
+    <div class="stat-label">Total Income</div>
+    <div class="stat-value">{{ totals.total_income | currency }}</div>
+    <i class="fas fa-arrow-trend-up stat-icon"></i>
+  </div>
+  <div class="stat-card stat-expense">
+    <div class="stat-label">Total Expenses</div>
+    <div class="stat-value">{{ totals.total_expense | currency }}</div>
+    <i class="fas fa-cart-shopping stat-icon"></i>
+  </div>
+  <div class="stat-card stat-savings">
+    <div class="stat-label">Net Savings</div>
+    <div class="stat-value" style="color:{% if totals.net_savings >= 0 %}var(--primary){% else %}var(--danger){% endif %}">
+      {{ totals.net_savings | currency }}
+    </div>
+    <i class="fas fa-piggy-bank stat-icon"></i>
+  </div>
+  <div class="stat-card stat-health">
+    <div class="stat-label">Health Score</div>
+    <div class="stat-value" style="color:var(--purple)">{{ health.score }}/100</div>
+    <div class="stat-sub">{{ health.grade }}</div>
+    <i class="fas fa-heart-pulse stat-icon"></i>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs" id="report-tabs">
+  <button class="tab-btn active" data-tab="monthly">Monthly Summary</button>
+  <button class="tab-btn" data-tab="category">Category Breakdown</button>
+  <button class="tab-btn" data-tab="health">Health Analysis</button>
+  <button class="tab-btn" data-tab="anomalies">Anomalies</button>
+  <button class="tab-btn" data-tab="forecast">Savings Forecast</button>
+</div>
+
+<!-- Monthly Summary -->
+<div class="tab-panel active" data-panel="monthly">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-chart-bar"></i>Income vs Expense</div></div>
+      <div class="chart-container" style="height:280px"><canvas id="monthlyBar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-chart-line"></i>Savings Trend</div></div>
+      <div class="chart-container" style="height:280px"><canvas id="savingsLine"></canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="card-header"><div class="card-title"><i class="fas fa-table"></i>Monthly Breakdown</div></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Month</th><th>Year</th><th style="text-align:right">Income</th><th style="text-align:right">Expense</th><th style="text-align:right">Net Savings</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for m in monthly %}
+          <tr>
+            <td style="font-family:var(--font-mono)">{{ m.month | month_name }}</td>
+            <td style="font-family:var(--font-mono)">{{ m.year }}</td>
+            <td style="text-align:right;font-family:var(--font-mono);color:var(--primary)">{{ m.total_income | currency }}</td>
+            <td style="text-align:right;font-family:var(--font-mono);color:var(--danger)">{{ m.total_expense | currency }}</td>
+            <td style="text-align:right;font-family:var(--font-mono);font-weight:700;color:{% if m.net_savings >= 0 %}var(--primary){% else %}var(--danger){% endif %}">
+              {{ m.net_savings | currency }}
+            </td>
+            <td>
+              {% if m.net_savings >= 0 %}
+                <span class="badge badge-ok">Surplus</span>
+              {% else %}
+                <span class="badge badge-exceeded">Deficit</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:24px">No data yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Category Breakdown -->
+<div class="tab-panel" data-panel="category">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-chart-pie"></i>Expense Distribution</div></div>
+      <div class="chart-container" style="height:300px"><canvas id="categoryPie"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-list-ol"></i>Category Totals</div></div>
+      {% if category %}
+        {% for c in category %}
+        <div style="padding:10px 0; border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:14px;font-weight:600">{{ c.category }}</span>
+            <span style="font-family:var(--font-mono);color:var(--danger);font-weight:700">{{ c.total_expense | currency }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="progress-bar-wrap" style="flex:1">
+              <div class="progress-bar-fill" style="width:{{ c.percentage }}%"></div>
+            </div>
+            <span style="font-size:12px;font-family:var(--font-mono);color:var(--text-2);min-width:36px">{{ c.percentage }}%</span>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state"><i class="fas fa-chart-pie"></i><p>No expense data yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Health Analysis -->
+<div class="tab-panel" data-panel="health">
+  {% if health.score > 0 %}
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-heart-pulse"></i>Score Breakdown</div></div>
+      <div style="display:flex;align-items:center;gap:32px;flex-wrap:wrap">
+        <div class="health-ring-wrap">
+          <div class="health-ring">
+            <svg viewBox="0 0 120 120" width="140" height="140">
+              <circle class="health-ring-track" cx="60" cy="60" r="50"/>
+              <circle class="health-ring-fill" cx="60" cy="60" r="50"
+                stroke-dasharray="314"
+                style="stroke-dashoffset:{{ 314 - (314 * health.score / 100) }}"/>
+            </svg>
+            <div class="health-ring-text">
+              <span class="health-score-num">{{ health.score }}</span>
+              <span class="health-grade">{{ health.grade }}</span>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          {% set b = health.breakdown %}
+          <div style="margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+              <span>Savings Rate ({{ b.savings_rate_pct }}%)</span>
+              <span style="font-family:var(--font-mono)">{{ b.savings_score }}/{{ b.savings_score_max }}</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:{{ (b.savings_score / b.savings_score_max * 100)|round }}%"></div></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+              <span>Budget Adherence ({{ b.adherence_pct }}%)</span>
+              <span style="font-family:var(--font-mono)">{{ b.adherence_score }}/{{ b.adherence_score_max }}</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:{{ (b.adherence_score / b.adherence_score_max * 100)|round }}%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+              <span>Expense Stability (CV: {{ b.expense_cv_pct }}%)</span>
+              <span style="font-family:var(--font-mono)">{{ b.stability_score }}/{{ b.stability_score_max }}</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:{{ (b.stability_score / b.stability_score_max * 100)|round }}%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title"><i class="fas fa-lightbulb"></i>Key Stats & Tips</div></div>
+      {% set st = health.stats %}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div style="background:var(--bg-base);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;font-family:var(--font-mono)">Avg Monthly Income</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--primary)">{{ st.avg_monthly_income | currency }}</div>
+        </div>
+        <div style="background:var(--bg-base);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;font-family:var(--font-mono)">Avg Monthly Expense</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--danger)">{{ st.avg_monthly_expense | currency }}</div>
+        </div>
+        <div style="background:var(--bg-base);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;font-family:var(--font-mono)">Avg Monthly Savings</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:{% if st.avg_monthly_savings >= 0 %}var(--primary){% else %}var(--danger){% endif %}">{{ st.avg_monthly_savings | currency }}</div>
+        </div>
+        <div style="background:var(--bg-base);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;font-family:var(--font-mono)">Months Analysed</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--info)">{{ st.months_analysed }}</div>
+        </div>
+      </div>
+      {% for tip in health.tips %}
+        <div style="font-size:13px;color:var(--text-2);padding:8px 0;border-bottom:1px solid var(--border);line-height:1.5">{{ tip }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+    <div class="card"><div class="empty-state"><i class="fas fa-chart-simple"></i><p>Add transactions to see your health analysis.</p></div></div>
+  {% endif %}
+</div>
+
+<!-- Anomalies -->
+<div class="tab-panel" data-panel="anomalies">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-triangle-exclamation"></i>Expense Anomalies</div>
+      <span style="font-size:12px;color:var(--text-3)">Transactions > 2× category average</span>
+    </div>
+    {% if anomalies %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Category</th><th>Description</th><th style="text-align:right">Amount</th><th style="text-align:right">Cat. Avg</th><th style="text-align:right">Deviation</th></tr></thead>
+          <tbody>
+            {% for a in anomalies %}
+            <tr class="anomaly-row">
+              <td style="font-family:var(--font-mono);font-size:13px">{{ a.date | date_fmt }}</td>
+              <td>{{ a.category }}</td>
+              <td style="color:var(--text-2);font-size:13px">{{ a.description or '—' }}</td>
+              <td style="text-align:right;font-family:var(--font-mono);color:var(--danger);font-weight:700">{{ a.amount | currency }}</td>
+              <td style="text-align:right;font-family:var(--font-mono);color:var(--text-2)">{{ a.category_mean | currency }}</td>
+              <td style="text-align:right;font-family:var(--font-mono);color:var(--warning);font-weight:700">+{{ a.deviation_pct }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state"><i class="fas fa-check-circle" style="color:var(--primary)"></i><p style="color:var(--primary)">No anomalies detected! Your spending looks consistent.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Savings Forecast -->
+<div class="tab-panel" data-panel="forecast">
+  <div class="card">
+    <div class="card-header"><div class="card-title"><i class="fas fa-chart-line"></i>6-Month Savings Forecast</div></div>
+    {% if forecast and not forecast.get('error') %}
+      <div class="stat-grid" style="margin-bottom:20px">
+        <div style="background:var(--bg-base);border-radius:8px;padding:14px">
+          <div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono);text-transform:uppercase">Current Total Savings</div>
+          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);color:var(--info);margin-top:4px">{{ forecast.current_total_savings | currency }}</div>
+        </div>
+        <div style="background:var(--bg-base);border-radius:8px;padding:14px">
+          <div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono);text-transform:uppercase">Avg Monthly Savings</div>
+          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);color:{% if forecast.avg_monthly_savings >= 0 %}var(--primary){% else %}var(--danger){% endif %};margin-top:4px">{{ forecast.avg_monthly_savings | currency }}</div>
+        </div>
+      </div>
+      <div class="chart-container" style="height:280px;margin-bottom:20px"><canvas id="forecastChart"></canvas></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Month</th><th style="text-align:right">Pessimistic</th><th style="text-align:right">Projected</th><th style="text-align:right">Optimistic</th></tr></thead>
+          <tbody>
+            {% for p in forecast.projections %}
+            <tr>
+              <td style="font-family:var(--font-mono)">Month +{{ p.month }}</td>
+              <td style="text-align:right;font-family:var(--font-mono);color:var(--danger)">{{ p.pessimistic | currency }}</td>
+              <td style="text-align:right;font-family:var(--font-mono);font-weight:700">{{ p.projected | currency }}</td>
+              <td style="text-align:right;font-family:var(--font-mono);color:var(--primary)">{{ p.optimistic | currency }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state"><i class="fas fa-chart-line"></i><p>Not enough data for forecast. Add more transactions!</p></div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const monthlyData  = {{ monthly | tojson }};
+const categoryData = {{ category | tojson }};
+const forecastData = {{ forecast | tojson }};
+const COLORS = ['#ff6b6b','#4ecdc4','#45b7d1','#96ceb4','#ffeaa7','#dda0dd','#98d8c8','#f7dc6f','#bb8fce','#85c1e9','#f0b27a','#82e0aa'];
+const mnames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+if (monthlyData.length) {
+  const labels = monthlyData.map(d => mnames[d.month-1] + " '" + String(d.year).slice(2));
+
+  new Chart(document.getElementById('monthlyBar'), {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label:'Income',  data: monthlyData.map(d=>d.total_income),  backgroundColor:'rgba(0,230,118,0.7)', borderRadius:5 },
+      { label:'Expense', data: monthlyData.map(d=>d.total_expense), backgroundColor:'rgba(255,79,106,0.7)', borderRadius:5 },
+    ]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{x:{grid:{color:'#2a2f42'}},y:{grid:{color:'#2a2f42'},ticks:{callback:v=>'₹'+v.toLocaleString()}}}
+    }
+  });
+
+  new Chart(document.getElementById('savingsLine'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label:'Net Savings', data:monthlyData.map(d=>d.net_savings), borderColor:'#4fc3f7', backgroundColor:'rgba(79,195,247,0.08)', fill:true, tension:0.3, pointRadius:5 }
+    ]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{x:{grid:{color:'#2a2f42'}},y:{grid:{color:'#2a2f42'},ticks:{callback:v=>'₹'+v.toLocaleString()}}}
+    }
+  });
+}
+
+if (categoryData.length) {
+  new Chart(document.getElementById('categoryPie'), {
+    type: 'doughnut',
+    data: { labels:categoryData.map(d=>d.category), datasets:[{data:categoryData.map(d=>d.total_expense),backgroundColor:COLORS,borderWidth:2,borderColor:'#1c2030'}]},
+    options:{ responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:11}}},
+      tooltip:{callbacks:{label:ctx=>` ₹${ctx.raw.toLocaleString()}`}}}
+    }
+  });
+}
+
+if (forecastData && forecastData.projections && forecastData.projections.length) {
+  const proj = forecastData.projections;
+  new Chart(document.getElementById('forecastChart'), {
+    type:'line',
+    data:{ labels:proj.map(p=>'M+'+p.month), datasets:[
+      {label:'Optimistic', data:proj.map(p=>p.optimistic), borderColor:'#00e676',backgroundColor:'rgba(0,230,118,0.05)',fill:true,tension:0.3},
+      {label:'Projected',  data:proj.map(p=>p.projected),  borderColor:'#4fc3f7',borderWidth:3,tension:0.3},
+      {label:'Pessimistic',data:proj.map(p=>p.pessimistic),borderColor:'#ff4f6a',backgroundColor:'rgba(255,79,106,0.05)',fill:true,tension:0.3},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{x:{grid:{color:'#2a2f42'}},y:{grid:{color:'#2a2f42'},ticks:{callback:v=>'₹'+v.toLocaleString()}}}
+    }
+  });
+}
+</script>
+{% endblock %}

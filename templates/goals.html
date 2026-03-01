@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}Goals — FinanceOS{% endblock %}
+{% block page_title %}Savings Goals{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Savings Goals</h1>
+    <p>Track your financial targets</p>
+  </div>
+  <button class="btn btn-primary" onclick="openModal('createGoalModal')">
+    <i class="fas fa-plus"></i> New Goal
+  </button>
+</div>
+
+{% if goals %}
+  <div class="grid-3">
+    {% for g in goals %}
+    <div class="goal-card {% if g.completed %}completed{% endif %}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <div class="goal-card-title">{{ g.name }}</div>
+        {% if g.completed %}
+          <span class="goal-completed-badge"><i class="fas fa-check"></i> Done</span>
+        {% endif %}
+      </div>
+      <div class="goal-card-meta">
+        {% if g.deadline %}
+          <i class="far fa-calendar"></i> {{ g.deadline | date_fmt }}
+          {% if g.days_left is not none %} · {{ g.days_left }} days left{% endif %}
+        {% else %}No deadline{% endif %}
+      </div>
+
+      <div class="goal-pct">{{ g.progress_pct }}%</div>
+      <div class="progress-bar-wrap" style="margin-bottom:8px">
+        <div class="progress-bar-fill {% if g.completed %}{% else %}{% if g.progress_pct < 50 %}warning{% endif %}{% endif %}"
+             style="width:{{ g.progress_pct }}%"></div>
+      </div>
+      <div class="goal-amounts">
+        <span class="goal-saved">{{ g.current_amount | currency }} saved</span>
+        <span class="goal-target">of {{ g.target_amount | currency }}</span>
+      </div>
+      {% if g.monthly_required and not g.completed %}
+        <div class="goal-monthly">Need <span>{{ g.monthly_required | currency }}/month</span> to reach goal</div>
+      {% endif %}
+      {% if g.notes %}
+        <div style="font-size:12px;color:var(--text-3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">{{ g.notes }}</div>
+      {% endif %}
+
+      {% if not g.completed %}
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-ghost btn-sm" style="flex:1"
+          onclick="openUpdateModal('{{ g.id }}', '{{ g.name }}', {{ g.current_amount }}, {{ g.target_amount }})">
+          <i class="fas fa-pen"></i> Update
+        </button>
+        <form method="POST" action="{{ url_for('goals.delete', goal_id=g.id) }}" onsubmit="return confirm('Delete this goal?')">
+          <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+        </form>
+      </div>
+      {% else %}
+      <div style="margin-top:14px">
+        <form method="POST" action="{{ url_for('goals.delete', goal_id=g.id) }}" onsubmit="return confirm('Delete this completed goal?')">
+          <button type="submit" class="btn btn-ghost btn-sm btn-block"><i class="fas fa-trash"></i> Remove</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card"><div class="empty-state">
+    <i class="fas fa-bullseye"></i>
+    <p>No savings goals yet.<br>
+      <button onclick="openModal('createGoalModal')" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:inherit">Create your first goal →</button>
+    </p>
+  </div></div>
+{% endif %}
+
+<!-- Create Goal Modal -->
+<div class="modal-overlay" id="createGoalModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-bullseye" style="color:var(--primary);margin-right:8px"></i>Create Savings Goal</div>
+    <form method="POST" action="{{ url_for('goals.create') }}">
+      <div class="form-group">
+        <label>Goal Name</label>
+        <input type="text" name="name" class="form-control" placeholder="e.g. New Laptop, Emergency Fund..." required/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Target Amount (₹)</label>
+          <input type="number" name="target_amount" class="form-control" placeholder="50000" min="1" step="0.01" required/>
+        </div>
+        <div class="form-group">
+          <label>Already Saved (₹)</label>
+          <input type="number" name="current_amount" class="form-control" placeholder="0" min="0" step="0.01" value="0"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Deadline <span style="color:var(--text-3);font-size:11px">(optional)</span></label>
+        <input type="date" name="deadline" class="form-control"/>
+      </div>
+      <div class="form-group">
+        <label>Notes <span style="color:var(--text-3);font-size:11px">(optional)</span></label>
+        <input type="text" name="notes" class="form-control" placeholder="Why are you saving for this?"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('createGoalModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Goal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Update Goal Modal -->
+<div class="modal-overlay" id="updateGoalModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-pen" style="color:var(--primary);margin-right:8px"></i>Update Progress — <span id="updateGoalName"></span></div>
+    <form method="POST" id="updateGoalForm">
+      <div class="form-group">
+        <label>Total Amount Saved So Far (₹)</label>
+        <input type="number" name="current_amount" id="updateAmount" class="form-control" min="0" step="0.01" required/>
+      </div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:16px">
+        Target: <span id="updateTarget" style="font-family:var(--font-mono);color:var(--text-1)"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('updateGoalModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Progress</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% block scripts %}
+<script>
+function openUpdateModal(id, name, current, target) {
+  document.getElementById('updateGoalName').textContent = name;
+  document.getElementById('updateAmount').value = current;
+  document.getElementById('updateTarget').textContent = '₹' + target.toLocaleString();
+  document.getElementById('updateGoalForm').action = `/goals/update/${id}`;
+  openModal('updateGoalModal');
+}
+</script>
+{% endblock %}
+
+{% endblock %}

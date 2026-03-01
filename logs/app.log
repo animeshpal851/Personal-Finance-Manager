@@ -1,0 +1,91 @@
+2026-03-01 20:36:59,939  INFO      pymongo.serverSelection: {"message": "Waiting for suitable server to become available", "selector": "Primary()", "operation": "ping", "topologyDescription": "<TopologyDescription id: 69a45613ee104b14d0fa51ff, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None>]>", "clientId": {"$oid": "69a45613ee104b14d0fa51ff"}, "remainingTimeMS": 5}
+2026-03-01 20:36:59,964  INFO      database.mongo_connection: Connected to MongoDB: mongodb://localhost:27017/ / personal_finance_db
+2026-03-01 20:36:59,964  INFO      __main__: MongoDB connected successfully.
+2026-03-01 20:37:00,063  INFO      werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.169.140.48:5000
+2026-03-01 20:37:00,063  INFO      werkzeug: [33mPress CTRL+C to quit[0m
+2026-03-01 20:37:00,067  INFO      werkzeug:  * Restarting with stat
+2026-03-01 20:37:00,679  INFO      pymongo.serverSelection: {"message": "Waiting for suitable server to become available", "selector": "Primary()", "operation": "ping", "topologyDescription": "<TopologyDescription id: 69a45614c41c0b2fe93d6710, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None>]>", "clientId": {"$oid": "69a45614c41c0b2fe93d6710"}, "remainingTimeMS": 5}
+2026-03-01 20:37:00,689  INFO      database.mongo_connection: Connected to MongoDB: mongodb://localhost:27017/ / personal_finance_db
+2026-03-01 20:37:00,689  INFO      __main__: MongoDB connected successfully.
+2026-03-01 20:37:00,740  WARNING   werkzeug:  * Debugger is active!
+2026-03-01 20:37:00,748  INFO      werkzeug:  * Debugger PIN: 102-852-814
+2026-03-01 20:37:22,159  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:22] "GET / HTTP/1.1" 200 -
+2026-03-01 20:37:22,432  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:22] "GET /static/css/style.css HTTP/1.1" 200 -
+2026-03-01 20:37:22,436  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:22] "GET /static/js/main.js HTTP/1.1" 200 -
+2026-03-01 20:37:24,074  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:24] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:37:29,228  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:29] "GET /transactions/add HTTP/1.1" 200 -
+2026-03-01 20:37:29,284  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:37:29,287  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:29] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:37:29,376  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:37:29] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:38:02,734  INFO      services.finance_service: Transaction inserted: 69a45652c41c0b2fe93d6711
+2026-03-01 20:38:02,737  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:02] "[32mPOST /transactions/add HTTP/1.1[0m" 302 -
+2026-03-01 20:38:02,769  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:02] "GET /transactions HTTP/1.1" 200 -
+2026-03-01 20:38:02,804  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:02] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:38:02,811  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:02] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:38:02,873  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:02] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:38:46,899  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:46] "GET /reports HTTP/1.1" 200 -
+2026-03-01 20:38:46,937  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:38:46,940  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:46] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:38:47,265  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:47] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:38:56,877  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:56] "GET /budgets HTTP/1.1" 200 -
+2026-03-01 20:38:56,911  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:38:56,915  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:56] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:38:56,966  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:38:56] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:39:11,059  INFO      services.budget_service: Budget created: Budget(category=Food, limit=2000.0, period=3/2026)
+2026-03-01 20:39:11,060  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:11] "[32mPOST /budgets/set HTTP/1.1[0m" 302 -
+2026-03-01 20:39:11,073  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:11] "GET /budgets HTTP/1.1" 200 -
+2026-03-01 20:39:11,119  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:11] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:39:11,120  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:11] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:39:11,167  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:11] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:39:13,969  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:13] "GET /transactions HTTP/1.1" 200 -
+2026-03-01 20:39:13,998  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:13] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:39:13,999  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:13] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:39:14,037  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:14] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:39:14,895  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:14] "GET /transactions/add HTTP/1.1" 200 -
+2026-03-01 20:39:14,925  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:14] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:39:14,928  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:14] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:39:14,972  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:14] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:39:24,717  INFO      services.finance_service: Transaction inserted: 69a456a4c41c0b2fe93d6713
+2026-03-01 20:39:24,719  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:24] "[32mPOST /transactions/add HTTP/1.1[0m" 302 -
+2026-03-01 20:39:24,731  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:24] "GET /transactions HTTP/1.1" 200 -
+2026-03-01 20:39:24,773  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:24] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:39:24,777  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:24] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:39:24,812  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:24] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:39:29,772  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:29] "GET /budgets HTTP/1.1" 200 -
+2026-03-01 20:39:29,799  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:39:29,804  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:29] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:39:29,856  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:29] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:39:30,991  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:30] "GET /reports HTTP/1.1" 200 -
+2026-03-01 20:39:31,018  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:31] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:39:31,024  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:31] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:39:31,086  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:39:31] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:40:28,418  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:28] "GET /transactions HTTP/1.1" 200 -
+2026-03-01 20:40:28,449  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:28] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:40:28,451  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:28] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:40:28,492  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:28] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:40:56,485  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:56] "GET /reports HTTP/1.1" 200 -
+2026-03-01 20:40:56,516  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:40:56,520  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:56] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:40:56,581  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:40:56] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:41:14,713  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:14] "GET /budgets HTTP/1.1" 200 -
+2026-03-01 20:41:14,742  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:14] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:41:14,744  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:14] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:41:14,777  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:14] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:41:15,346  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:15] "GET /goals HTTP/1.1" 200 -
+2026-03-01 20:41:15,374  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:41:15,377  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:15] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:41:15,426  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:15] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-01 20:41:18,291  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:18] "GET / HTTP/1.1" 200 -
+2026-03-01 20:41:18,312  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-03-01 20:41:18,316  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:18] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-03-01 20:41:18,377  INFO      werkzeug: 10.169.140.48 - - [01/Mar/2026 20:41:18] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 500 -
+2026-03-02 00:09:16,787  INFO      werkzeug:  * Detected change in 'D:\\personal_finance_web\\app.py', reloading
+2026-03-02 00:09:17,734  INFO      werkzeug:  * Restarting with stat
+2026-03-02 00:09:19,107  INFO      pymongo.serverSelection: {"message": "Waiting for suitable server to become available", "selector": "Primary()", "operation": "ping", "topologyDescription": "<TopologyDescription id: 69a487d7fc2d6fed2337cd4c, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None>]>", "clientId": {"$oid": "69a487d7fc2d6fed2337cd4c"}, "remainingTimeMS": 5}
+2026-03-02 00:09:19,136  INFO      database.mongo_connection: Connected to MongoDB: mongodb://localhost:27017/ / personal_finance_db
+2026-03-02 00:09:19,136  INFO      __main__: MongoDB connected successfully.
+2026-03-02 00:09:19,206  WARNING   werkzeug:  * Debugger is active!
+2026-03-02 00:09:19,210  INFO      werkzeug:  * Debugger PIN: 102-852-814

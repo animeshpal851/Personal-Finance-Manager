@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Transactions — FinanceOS{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>All Transactions</h1>
+    <p>{{ total }} total records</p>
+  </div>
+  <a href="{{ url_for('transactions.add') }}" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Add New
+  </a>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <form method="GET" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+    <select name="type" class="form-control" onchange="this.form.submit()">
+      <option value="" {% if not filter_type %}selected{% endif %}>All Types</option>
+      <option value="income"  {% if filter_type == 'income' %}selected{% endif %}>Income Only</option>
+      <option value="expense" {% if filter_type == 'expense' %}selected{% endif %}>Expense Only</option>
+    </select>
+    <select name="limit" class="form-control" onchange="this.form.submit()">
+      <option value="20">Last 20</option>
+      <option value="50" selected>Last 50</option>
+      <option value="100">Last 100</option>
+      <option value="500">All (500)</option>
+    </select>
+  </form>
+</div>
+
+<div class="card">
+  {% if transactions %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th style="text-align:right">Amount</th>
+            <th style="text-align:center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transactions %}
+          <tr>
+            <td style="font-family:var(--font-mono);font-size:13px;color:var(--text-2)">{{ t.date | date_fmt }}</td>
+            <td><span class="badge badge-{{ t.transaction_type }}">{{ t.transaction_type }}</span></td>
+            <td>{{ t.category }}</td>
+            <td style="color:var(--text-2);font-size:13px">{{ t.description or '—' }}</td>
+            <td style="text-align:right;font-family:var(--font-mono);font-weight:700">
+              <span style="color: {% if t.transaction_type == 'income' %}var(--primary){% else %}var(--danger){% endif %}">
+                {% if t.transaction_type == 'income' %}+{% else %}-{% endif %}{{ t.amount | currency }}
+              </span>
+            </td>
+            <td style="text-align:center">
+              <form method="POST" action="{{ url_for('transactions.delete', txn_id=t._id) }}"
+                    onsubmit="return confirm('Delete this transaction?')">
+                <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <i class="fas fa-receipt"></i>
+      <p>No transactions found.<br>
+        <a href="{{ url_for('transactions.add') }}" style="color:var(--primary)">Add your first transaction →</a>
+      </p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

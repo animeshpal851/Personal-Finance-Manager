@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Budgets — FinanceOS{% endblock %}
+{% block page_title %}Budget Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Budget Management</h1>
+    <p>Set and monitor your monthly spending limits</p>
+  </div>
+  <button class="btn btn-primary" onclick="openModal('setBudgetModal')">
+    <i class="fas fa-plus"></i> Set Budget
+  </button>
+</div>
+
+<!-- Month selector -->
+<div class="filter-bar">
+  <form method="GET" style="display:flex;gap:10px;align-items:center">
+    <select name="month" class="form-control" onchange="this.form.submit()">
+      {% for m in range(1,13) %}
+        <option value="{{ m }}" {% if m == month %}selected{% endif %}>
+          {{ m | month_name }}
+        </option>
+      {% endfor %}
+    </select>
+    <select name="year" class="form-control" onchange="this.form.submit()">
+      {% for y in range(now.year, now.year - 4, -1) %}
+        <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="grid-2">
+  <!-- Budget vs Actual -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-wallet"></i>Budget vs Actual — {{ month | month_name }} {{ year }}</div>
+    </div>
+    {% if data %}
+      {% for d in data %}
+      <div class="budget-row">
+        <div class="budget-row-top">
+          <div>
+            <div class="budget-cat">{{ d.category }}</div>
+            <div style="margin-top:4px">
+              {% if d.alert == 'OK' %}<span class="badge badge-ok">{{ d.alert }}</span>
+              {% elif 'WARNING' in d.alert %}<span class="badge badge-warning">⚠ Warning 70%+</span>
+              {% elif 'CRITICAL' in d.alert %}<span class="badge badge-critical">🟠 Critical 90%+</span>
+              {% else %}<span class="badge badge-exceeded">🔴 Exceeded</span>{% endif %}
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="budget-nums">
+              <span>{{ d.actual | currency }}</span> / {{ d.budget | currency }}
+            </div>
+            <div style="font-size:12px;color:{% if d.remaining >= 0 %}var(--primary){% else %}var(--danger){% endif %};font-family:var(--font-mono)">
+              {% if d.remaining >= 0 %}{{ d.remaining | currency }} left{% else %}{{ (d.remaining * -1) | currency }} over{% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill {% if d.usage_pct >= 100 %}danger{% elif d.usage_pct >= 70 %}warning{% endif %}"
+               style="width:{{ [d.usage_pct, 100]|min }}%"></div>
+        </div>
+        <div style="text-align:right;font-size:11px;font-family:var(--font-mono);color:var(--text-3);margin-top:4px">{{ d.usage_pct }}%</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-wallet"></i>
+        <p>No budgets set for {{ month | month_name }} {{ year }}.<br>
+        <button onclick="openModal('setBudgetModal')" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:inherit">Set one now →</button></p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- All Budgets -->
+  <div class="card">
+    <div class="card-header"><div class="card-title"><i class="fas fa-list"></i>All Set Budgets</div></div>
+    {% if all_budgets %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Category</th><th>Month/Year</th><th style="text-align:right">Limit</th><th style="text-align:center">Delete</th></tr></thead>
+          <tbody>
+            {% for b in all_budgets %}
+            <tr>
+              <td>{{ b.category }}</td>
+              <td style="font-family:var(--font-mono);font-size:13px;color:var(--text-2)">{{ b.month | month_name }} {{ b.year }}</td>
+              <td style="text-align:right;font-family:var(--font-mono);color:var(--warning);font-weight:700">{{ b.limit_amount | currency }}</td>
+              <td style="text-align:center">
+                <form method="POST" action="{{ url_for('budgets.delete_budget') }}" onsubmit="return confirm('Delete this budget?')">
+                  <input type="hidden" name="category" value="{{ b.category }}"/>
+                  <input type="hidden" name="month" value="{{ b.month }}"/>
+                  <input type="hidden" name="year" value="{{ b.year }}"/>
+                  <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state"><i class="fas fa-wallet"></i><p>No budgets set yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Set Budget Modal -->
+<div class="modal-overlay" id="setBudgetModal">
+  <div class="modal">
+    <div class="modal-title"><i class="fas fa-wallet" style="color:var(--primary);margin-right:8px"></i>Set Budget</div>
+    <form method="POST" action="{{ url_for('budgets.set_budget') }}">
+      <div class="form-group">
+        <label>Category</label>
+        <select name="category" class="form-control">
+          {% for cat in categories %}
+            <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Budget Limit (₹)</label>
+        <input type="number" name="amount" class="form-control" placeholder="e.g. 5000" min="1" step="0.01" required/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Month</label>
+          <select name="month" class="form-control">
+            {% for m in range(1,13) %}
+              <option value="{{ m }}" {% if m == now.month %}selected{% endif %}>{{ m | month_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Year</label>
+          <select name="year" class="form-control">
+            {% for y in range(now.year, now.year + 3) %}
+              <option value="{{ y }}" {% if y == now.year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('setBudgetModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Budget</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Add Transaction — FinanceOS{% endblock %}
+{% block page_title %}Add Transaction{% endblock %}
+
+{% block content %}
+<div style="max-width: 560px; margin: 0 auto;">
+  <div class="page-header">
+    <div>
+      <h1>Add Transaction</h1>
+      <p>Record a new income or expense entry</p>
+    </div>
+    <a href="{{ url_for('transactions.index') }}" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Back</a>
+  </div>
+
+  <div class="card">
+    <form method="POST" action="{{ url_for('transactions.add') }}" id="txnForm">
+
+      <!-- Type Selector -->
+      <div class="form-group">
+        <label>Transaction Type</label>
+        <input type="hidden" name="type" id="type-input" value="expense"/>
+        <div class="type-selector">
+          <button type="button" class="type-btn expense-btn" id="expense-btn">
+            <i class="fas fa-arrow-up" style="color:var(--danger)"></i>
+            Expense
+          </button>
+          <button type="button" class="type-btn income-btn" id="income-btn">
+            <i class="fas fa-arrow-down" style="color:var(--primary)"></i>
+            Income
+          </button>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label>Category</label>
+        <div id="expense-categories">
+          <select name="category" class="form-control" id="expense-cat-select">
+            {% for cat in expense_categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div id="income-categories" style="display:none">
+          <select name="category" class="form-control" id="income-cat-select">
+            {% for cat in income_categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Amount & Date -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount (₹)</label>
+          <input type="number" name="amount" class="form-control" placeholder="0.00"
+                 step="0.01" min="0.01" required/>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" name="date" class="form-control" value="{{ today }}" required/>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label>Description <span style="color:var(--text-3);font-size:11px">(optional)</span></label>
+        <input type="text" name="description" class="form-control" placeholder="e.g. Lunch at office, Monthly salary..."/>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px">
+        <i class="fas fa-plus"></i> Save Transaction
+      </button>
+    </form>
+  </div>
+</div>
+
+{% block scripts %}
+<script>
+// When type changes, swap the active category select name so the right one submits
+const expenseSel = document.getElementById('expense-cat-select');
+const incomeSel  = document.getElementById('income-cat-select');
+const form = document.getElementById('txnForm');
+form.addEventListener('submit', () => {
+  const type = document.getElementById('type-input').value;
+  if (type === 'income') {
+    expenseSel.removeAttribute('name');
+    incomeSel.setAttribute('name', 'category');
+  } else {
+    incomeSel.removeAttribute('name');
+    expenseSel.setAttribute('name', 'category');
+  }
+});
+</script>
+{% endblock %}
+
+{% endblock %}

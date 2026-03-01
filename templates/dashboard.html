@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — FinanceOS{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Stat Cards -->
+<div class="stat-grid">
+  <div class="stat-card stat-income">
+    <div class="stat-label">Total Income</div>
+    <div class="stat-value">{{ totals.total_income | currency }}</div>
+    <div class="stat-sub">This month: {{ current_month.total_income | currency }}</div>
+    <i class="fas fa-arrow-trend-up stat-icon"></i>
+  </div>
+  <div class="stat-card stat-expense">
+    <div class="stat-label">Total Expenses</div>
+    <div class="stat-value">{{ totals.total_expense | currency }}</div>
+    <div class="stat-sub">This month: {{ current_month.total_expense | currency }}</div>
+    <i class="fas fa-cart-shopping stat-icon"></i>
+  </div>
+  <div class="stat-card stat-savings">
+    <div class="stat-label">Net Savings</div>
+    <div class="stat-value" style="color: {% if totals.net_savings >= 0 %}var(--primary){% else %}var(--danger){% endif %}">
+      {{ totals.net_savings | currency }}
+    </div>
+    <div class="stat-sub">This month: {{ current_month.net_savings | currency }}</div>
+    <i class="fas fa-piggy-bank stat-icon"></i>
+  </div>
+  <div class="stat-card stat-health">
+    <div class="stat-label">Health Score</div>
+    <div class="stat-value" style="color: var(--purple)">{{ health.score }}<span style="font-size:14px">/100</span></div>
+    <div class="stat-sub">{{ health.grade }}</div>
+    <i class="fas fa-heart-pulse stat-icon"></i>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2" style="margin-bottom:20px">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-chart-bar"></i>Income vs Expense</div>
+    </div>
+    <div class="chart-container" style="height:260px">
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-chart-pie"></i>Expense by Category</div>
+    </div>
+    <div class="chart-container" style="height:260px">
+      <canvas id="pieChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Row -->
+<div class="grid-cols-3-1">
+  <!-- Recent Transactions -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-clock-rotate-left"></i>Recent Transactions</div>
+      <a href="{{ url_for('transactions.index') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+    {% if recent %}
+      {% for t in recent %}
+        <div class="txn-item">
+          <div class="txn-icon {{ t.transaction_type }}">
+            <i class="fas {% if t.transaction_type == 'income' %}fa-arrow-down{% else %}fa-arrow-up{% endif %}"></i>
+          </div>
+          <div class="txn-info">
+            <div class="txn-cat">{{ t.category }}</div>
+            <div class="txn-desc">{{ t.description or '—' }}</div>
+          </div>
+          <div>
+            <div class="txn-amount {{ t.transaction_type }}">
+              {% if t.transaction_type == 'income' %}+{% else %}-{% endif %}{{ t.amount | currency }}
+            </div>
+            <div class="txn-date">{{ t.date | date_fmt }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-receipt"></i>
+        <p>No transactions yet.<br><a href="{{ url_for('transactions.add') }}" style="color:var(--primary)">Add your first one →</a></p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Health Score + Tips -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fas fa-heart-pulse"></i>Health</div>
+    </div>
+    {% if health.score > 0 %}
+      <div class="health-ring-wrap">
+        <div class="health-ring">
+          <svg viewBox="0 0 120 120" width="120" height="120">
+            <circle class="health-ring-track" cx="60" cy="60" r="50"/>
+            <circle class="health-ring-fill
+              {% if health.score >= 85 %}grade-a
+              {% elif health.score >= 70 %}grade-b
+              {% elif health.score >= 55 %}grade-c
+              {% elif health.score >= 40 %}grade-d
+              {% else %}grade-f{% endif %}"
+              cx="60" cy="60" r="50"
+              stroke-dasharray="314"
+              data-target="{{ health.score }}"
+              style="stroke-dashoffset: {{ 314 - (314 * health.score / 100) }}"/>
+          </svg>
+          <div class="health-ring-text">
+            <span class="health-score-num">{{ health.score }}</span>
+            <span class="health-grade">/ 100</span>
+          </div>
+        </div>
+        <div class="health-label">{{ health.grade }}</div>
+      </div>
+      <div style="margin-top:16px">
+        {% for tip in health.tips %}
+          <div style="font-size:12px; color:var(--text-2); padding:6px 0; border-bottom:1px solid var(--border); line-height:1.5">{{ tip }}</div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-chart-simple"></i>
+        <p>Add transactions to see your health score.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const monthlyData = {{ monthly | tojson }};
+const categoryData = {{ category | tojson }};
+
+// ── Bar Chart ──────────────────────────────────────────────────
+if (monthlyData.length > 0) {
+  const labels = monthlyData.map(d => {
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[d.month - 1] + ' ' + String(d.year).slice(2);
+  });
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Income',  data: monthlyData.map(d => d.total_income),  backgroundColor: 'rgba(0,230,118,0.7)', borderRadius: 5 },
+        { label: 'Expense', data: monthlyData.map(d => d.total_expense), backgroundColor: 'rgba(255,79,106,0.7)', borderRadius: 5 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        x: { grid: { color: '#2a2f42' } },
+        y: { grid: { color: '#2a2f42' }, ticks: { callback: v => '₹' + v.toLocaleString() } }
+      }
+    }
+  });
+}
+
+// ── Pie Chart ──────────────────────────────────────────────────
+if (categoryData.length > 0) {
+  const COLORS = ['#ff6b6b','#4ecdc4','#45b7d1','#96ceb4','#ffeaa7','#dda0dd','#98d8c8','#f7dc6f','#bb8fce','#85c1e9','#f0b27a','#82e0aa'];
+  new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+      labels: categoryData.map(d => d.category),
+      datasets: [{ data: categoryData.map(d => d.total_expense), backgroundColor: COLORS, borderWidth: 2, borderColor: '#1c2030' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => ` ₹${ctx.raw.toLocaleString()}` } }
+      }
+    }
+  });
+}
+</script>
+{% endblock %}
