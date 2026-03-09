@@ -89,3 +89,35 @@
 2026-03-02 00:09:19,136  INFO      __main__: MongoDB connected successfully.
 2026-03-02 00:09:19,206  WARNING   werkzeug:  * Debugger is active!
 2026-03-02 00:09:19,210  INFO      werkzeug:  * Debugger PIN: 102-852-814
+2026-03-09 21:53:38,424  ERROR     database.mongo_connection: MongoDB connection failed: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af415db5e7b1dd052341f3, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:53:38,425  ERROR     app: MongoDB connection failed: Cannot connect to MongoDB at mongodb://localhost:27017/.
+Please ensure MongoDB is running and try again.
+Details: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af415db5e7b1dd052341f3, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:53:46,579  ERROR     database.mongo_connection: MongoDB connection failed: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af4165b0ce74168c4405d1, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:53:46,579  ERROR     app: MongoDB connection failed: Cannot connect to MongoDB at mongodb://localhost:27017/.
+Please ensure MongoDB is running and try again.
+Details: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af4165b0ce74168c4405d1, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:53:56,551  ERROR     database.mongo_connection: MongoDB connection failed: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af416ff14ea53d9e187a06, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:53:56,551  ERROR     app: MongoDB connection failed: Cannot connect to MongoDB at mongodb://localhost:27017/.
+Please ensure MongoDB is running and try again.
+Details: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af416ff14ea53d9e187a06, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:54:07,949  ERROR     database.mongo_connection: MongoDB connection failed: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af417a5240789a95b633e1, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:54:07,950  ERROR     app: MongoDB connection failed: Cannot connect to MongoDB at mongodb://localhost:27017/.
+Please ensure MongoDB is running and try again.
+Details: localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 5.0s, Topology Description: <TopologyDescription id: 69af417a5240789a95b633e1, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 111] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-03-09 21:54:28,238  INFO      app: MongoDB connected successfully.
+2026-03-09 21:54:28,251  INFO      werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.1.0.46:5001
+2026-03-09 21:54:28,251  INFO      werkzeug: [33mPress CTRL+C to quit[0m
+2026-03-09 21:54:32,936  INFO      werkzeug: 127.0.0.1 - - [09/Mar/2026 21:54:32] "GET /library HTTP/1.1" 200 -
+2026-03-09 21:55:07,100  INFO      app: MongoDB connected successfully.
+2026-03-09 21:55:07,110  INFO      werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.1.0.46:5001
+2026-03-09 21:55:07,110  INFO      werkzeug: [33mPress CTRL+C to quit[0m
+2026-03-09 21:55:12,807  INFO      werkzeug: 127.0.0.1 - - [09/Mar/2026 21:55:12] "GET /library HTTP/1.1" 200 -
+2026-03-09 21:55:34,187  INFO      app: MongoDB connected successfully.
+2026-03-09 21:55:44,603  INFO      app: MongoDB connected successfully.
