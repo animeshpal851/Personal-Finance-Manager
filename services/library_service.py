@@ -136,7 +136,7 @@ class SinglyLinkedList:
                 query_lower in book.book_id.lower()
                 or query_lower in book.title.lower()
                 or query_lower in book.author.lower()
-                or query_lower in book.genre.lower()
+                or (bool(book.genre) and query_lower in book.genre.lower())
             )
             steps.append({
                 "node_id": book.book_id,

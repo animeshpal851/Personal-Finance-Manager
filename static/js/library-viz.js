@@ -144,17 +144,18 @@ function animateDelete(bookId, form) {
   // Prevent immediate form submit
   const steps = [];
 
-  // Collect traversal steps by walking visible nodes
-  document.querySelectorAll(".ll-node-wrap").forEach((wrap, idx) => {
+  // Collect traversal steps by walking visible nodes (stop after target found)
+  const wraps = document.querySelectorAll(".ll-node-wrap");
+  for (let idx = 0; idx < wraps.length; idx++) {
+    const wrap = wraps[idx];
     const id = wrap.dataset.nodeId;
     steps.push({
       node_id: id,
       action: id === bookId ? "found" : "visit",
       position: idx,
     });
-    // Stop after finding the target
-    if (id === bookId) return false;
-  });
+    if (id === bookId) break; // stop after finding the target
+  }
 
   setStatus(`Deleting node ${bookId}…`);
   resetAllHighlights();
