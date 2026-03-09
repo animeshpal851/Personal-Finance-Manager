@@ -564,3 +564,283 @@ select.form-control { cursor: pointer; }
   .form-row, .form-row-3 { grid-template-columns: 1fr; }
   .content { padding: 16px; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   LIBRARY MANAGEMENT — Singly Linked List Visualization
+══════════════════════════════════════════════════════════════ */
+
+/* Page layout */
+.lib-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.lib-forms .card + .card { margin-top: 0; }
+
+/* Visualization card */
+.viz-card { overflow: hidden; }
+
+.viz-legend {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .75rem;
+  color: var(--text-2);
+}
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Animation status bar */
+.anim-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(79,195,247,0.08);
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+  color: var(--info);
+}
+
+/* Horizontal scroll area for linked list */
+.viz-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 28px 20px 20px;
+  min-height: 180px;
+}
+
+/* Container that lays out nodes in a row */
+.ll-container {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: max-content;
+}
+
+/* Each node + arrow wrapper */
+.ll-node-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* HEAD label */
+.ll-head-label {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  color: var(--primary);
+  background: rgba(0,230,118,0.10);
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-bottom: 8px;
+  letter-spacing: .06em;
+}
+
+/* The node box itself */
+.ll-node {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  min-width: 140px;
+  max-width: 160px;
+  text-align: center;
+  transition: background .25s, border-color .25s, box-shadow .25s;
+  cursor: default;
+  position: relative;
+}
+.ll-node:hover {
+  border-color: var(--border-light);
+  background: var(--bg-hover);
+}
+
+.ll-node-id {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--primary);
+  margin-bottom: 4px;
+  letter-spacing: .05em;
+}
+.ll-node-title {
+  font-weight: 600;
+  font-size: .85rem;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ll-node-author {
+  font-size: .75rem;
+  color: var(--text-2);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ll-node-genre {
+  font-size: .7rem;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.ll-node-ptr {
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  color: var(--text-3);
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+/* Arrow between nodes */
+.ll-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  margin-top: 32px; /* align vertically with node center */
+}
+.ll-arrow-line {
+  display: inline-block;
+  width: 32px;
+  height: 2px;
+  background: var(--primary);
+  opacity: .55;
+}
+.ll-arrow-head {
+  color: var(--primary);
+  font-size: .8rem;
+  opacity: .8;
+  margin-left: -2px;
+}
+
+/* NULL terminus */
+.ll-null {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  margin-top: 32px;
+}
+.ll-null-label {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  color: var(--text-3);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  letter-spacing: .05em;
+}
+
+/* Empty state */
+.ll-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 120px;
+  color: var(--text-3);
+  font-size: .9rem;
+}
+.ll-empty i { font-size: 1.6rem; }
+
+/* Search result banner */
+.search-result-banner {
+  padding: 10px 16px;
+  background: rgba(79,195,247,0.07);
+  border-top: 1px solid var(--border);
+  font-size: .85rem;
+  color: var(--text-2);
+}
+
+/* Inline search form in stat bar */
+.search-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+.input-sm {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: .85rem;
+  color: var(--text-1);
+  width: 180px;
+  transition: border-color .2s;
+}
+.input-sm:focus { outline: none; border-color: var(--primary); }
+
+.btn-sm {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: .8rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity .2s;
+}
+.btn-sm:hover { opacity: .85; }
+.btn-sm.btn-primary { background: var(--primary); color: #000; }
+.btn-sm.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+/* Badge for book ID */
+.badge-id {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  background: rgba(0,230,118,0.10);
+  color: var(--primary);
+  border: 1px solid rgba(0,230,118,0.25);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+/* Edit / delete icon buttons */
+.action-btns { display: flex; gap: 6px; }
+.btn-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: .8rem;
+  transition: opacity .2s, background .2s;
+  background: var(--bg-hover);
+  color: var(--text-2);
+}
+.btn-icon:hover { opacity: .9; }
+.btn-edit-row:hover { background: rgba(255,184,0,0.15); color: var(--warning); }
+.btn-del:hover      { background: rgba(255,79,106,0.15); color: var(--danger); }
+.delete-form { display: inline; }
+
+/* Warning button variant */
+.btn-warning {
+  background: var(--warning);
+  color: #000;
+}
+.btn-warning:hover { background: #e0a000; }
+
+/* Full-width button utility */
+.btn-full { width: 100%; justify-content: center; }
+
+@media (max-width: 900px) {
+  .lib-grid { grid-template-columns: 1fr; }
+  .input-sm { width: 130px; }
+}

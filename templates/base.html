@@ -38,6 +38,9 @@
     <a href="{{ url_for('goals.index') }}" class="nav-item {% if 'goals' in request.endpoint %}active{% endif %}">
       <i class="fas fa-bullseye"></i><span>Goals</span>
     </a>
+    <a href="{{ url_for('library.index') }}" class="nav-item {% if 'library' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-book"></i><span>Library</span>
+    </a>
   </nav>
 
   <div class="sidebar-footer">

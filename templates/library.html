@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Library — FinanceOS{% endblock %}
+{% block page_title %}Library Management{% endblock %}
+
+{% block content %}
+<div class="library-page">
+
+  <!-- ── Stats bar ─────────────────────────────────────────────────────── -->
+  <div class="stat-grid" style="margin-bottom:1.5rem;">
+    <div class="stat-card stat-income">
+      <div class="stat-label"><i class="fas fa-book"></i> Total Books</div>
+      <div class="stat-value" id="stat-total">{{ total }}</div>
+      <div class="stat-sub">nodes in linked list</div>
+    </div>
+    <div class="stat-card stat-savings">
+      <div class="stat-label"><i class="fas fa-link"></i> Data Structure</div>
+      <div class="stat-value" style="font-size:1rem;color:var(--primary);">Linked List</div>
+      <div class="stat-sub">Singly Linked List</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="fas fa-search"></i> Search Books</div>
+      <form method="get" action="{{ url_for('library.search') }}" class="search-inline" style="margin-top:6px">
+        <input type="text" name="q" value="{{ search_query }}"
+               placeholder="ID / Title / Author…" class="input-sm"/>
+        <button type="submit" class="btn-sm btn-primary">Go</button>
+        {% if search_query %}
+          <a href="{{ url_for('library.index') }}" class="btn-sm btn-ghost">Clear</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Two-column layout ─────────────────────────────────────────────── -->
+  <div class="lib-grid">
+
+    <!-- LEFT: Add / Update forms -->
+    <div class="lib-forms">
+
+      <!-- Add Book -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fas fa-plus-circle"></i> Add Book</div>
+        </div>
+        <form method="post" action="{{ url_for('library.add') }}" id="addBookForm">
+          <div class="form-group">
+            <label>Book ID</label>
+            <input type="text" name="book_id" placeholder="e.g. B001" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" placeholder="Book title" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" name="author" placeholder="Author name" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label>Genre <span style="color:var(--text-3)">(optional)</span></label>
+            <input type="text" name="genre" placeholder="e.g. Fiction" class="form-control"/>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="addBtn">
+            <i class="fas fa-plus"></i> Insert Node
+          </button>
+        </form>
+      </div>
+
+      <!-- Update Book -->
+      <div class="card" style="margin-top:1rem;">
+        <div class="card-header">
+          <div class="card-title"><i class="fas fa-edit"></i> Update Book</div>
+        </div>
+        <form method="post" action="" id="updateBookForm">
+          <div class="form-group">
+            <label>Book ID to update</label>
+            <input type="text" id="updateId" placeholder="e.g. B001" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label>New Title</label>
+            <input type="text" name="title" id="updateTitle" placeholder="New title" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label>New Author</label>
+            <input type="text" name="author" id="updateAuthor" placeholder="New author" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label>New Genre</label>
+            <input type="text" name="genre" id="updateGenre" placeholder="New genre" class="form-control"/>
+          </div>
+          <button type="submit" class="btn btn-warning" style="width:100%;justify-content:center;" id="updateBtn">
+            <i class="fas fa-save"></i> Update Node
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- RIGHT: Visualization + book list -->
+    <div class="lib-main">
+
+      <!-- Linked List Visualization -->
+      <div class="card viz-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fas fa-project-diagram"></i> Linked List Visualization</div>
+          <div class="viz-legend">
+            <span class="legend-dot" style="background:var(--primary)"></span>Normal
+            <span class="legend-dot" style="background:var(--warning);margin-left:12px"></span>Visiting
+            <span class="legend-dot" style="background:var(--info);margin-left:12px"></span>Found
+            <span class="legend-dot" style="background:var(--danger);margin-left:12px"></span>Deleting
+          </div>
+        </div>
+
+        <!-- Animation status bar -->
+        <div id="animStatus" class="anim-status" style="display:none">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span id="animMsg">Traversing linked list…</span>
+        </div>
+
+        <!-- The linked list canvas -->
+        <div class="viz-scroll">
+          <div id="llViz" class="ll-container">
+            <!-- Nodes rendered by JavaScript -->
+          </div>
+        </div>
+
+        {% if search_query and search_steps %}
+          <div class="search-result-banner">
+            <i class="fas fa-search"></i>
+            Search traversal: <strong>{{ search_steps|length }}</strong> node(s) visited
+            for query <em>"{{ search_query }}"</em> —
+            <strong>{{ search_results|length }}</strong> match(es) found.
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Book table -->
+      <div class="card" style="margin-top:1rem;">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-list-ul"></i>
+            {% if search_query and search_results is not none %}
+              Search Results for "{{ search_query }}" ({{ search_results|length }})
+            {% else %}
+              All Books — {{ total }} node(s)
+            {% endif %}
+          </div>
+        </div>
+
+        {% set display_books = search_results if (search_query and search_results is not none) else books %}
+
+        {% if display_books %}
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Book ID</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Genre</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for book in display_books %}
+                <tr class="book-row" data-id="{{ book.book_id }}"
+                    data-title="{{ book.title }}" data-author="{{ book.author }}"
+                    data-genre="{{ book.genre|default('') }}">
+                  <td class="mono" style="color:var(--text-3)">{{ loop.index }}</td>
+                  <td><span class="badge-id">{{ book.book_id }}</span></td>
+                  <td>{{ book.title }}</td>
+                  <td style="color:var(--text-2)">{{ book.author }}</td>
+                  <td style="color:var(--text-3)">{{ book.genre or '—' }}</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="btn-icon btn-edit-row"
+                              data-id="{{ book.book_id }}"
+                              data-title="{{ book.title }}"
+                              data-author="{{ book.author }}"
+                              data-genre="{{ book.genre|default('') }}"
+                              title="Edit">
+                        <i class="fas fa-pen"></i>
+                      </button>
+                      <form method="post"
+                            action="{{ url_for('library.delete', book_id=book.book_id) }}"
+                            class="delete-form"
+                            onsubmit="return animateDelete('{{ book.book_id }}', this)">
+                        <button type="submit" class="btn-icon btn-del" title="Delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <i class="fas fa-book-open"></i>
+            <p>
+              {% if search_query %}
+                No books matched your search.
+              {% else %}
+                No books yet. Add a book to populate the linked list.
+              {% endif %}
+            </p>
+          </div>
+        {% endif %}
+      </div>
+
+    </div><!-- /.lib-main -->
+  </div><!-- /.lib-grid -->
+</div><!-- /.library-page -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /* ── Initial data passed from Flask ──────────────────────────────────── */
+  const VIZ_DATA   = {{ viz | tojson }};
+  const SEARCH_Q   = {{ search_query | tojson }};
+  const SEARCH_STEPS = {{ search_steps | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/library-viz.js') }}"></script>
+{% endblock %}
